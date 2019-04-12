@@ -7,36 +7,39 @@ jobs:
     docker:
       - image: circleci/golang:1.12
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    environment:
+      GO111MODULE: "on"
+    working_directory: /go/src/github.com/yagihashoo/sum
     steps:
       - checkout
 
-      - run: go get golang.org/x/vgo
-      - run: vgo build
+      - run: go build
   test:
     docker:
       - image: circleci/golang:1.12
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    environment:
+      GO111MODULE: "on"
+    working_directory: /go/src/github.com/yagihashoo/sum
     steps:
       - checkout
 
-      - run: go get golang.org/x/vgo
-      - run: vgo test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
       - run: bash <(curl -s https://codecov.io/bash)
   release:
     docker:
       - image: circleci/golang:1.12
 
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    environment:
+      GO111MODULE: "on"
+    working_directory: /go/src/github.com/yagihashoo/sum
     steps:
       - checkout
 
-      - run: go get golang.org/x/vgo
       - run: go get github.com/tcnksm/ghr
       - run: go get github.com/mitchellh/gox
       - run: mkdir dist
-      - run: gox -output "dist/sum_{{.OS}}_{{.Arch}}"
+      - run: make dist
       - run: ghr $(cat version.txt) ./dist && echo Done || echo No release
 workflows:
   version: 2
