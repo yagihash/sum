@@ -1,8 +1,11 @@
-build:
-	@ vgo build
+BIN=sum
+JOB=build
 
-gox:
-	@ gox -output "dist/sum_{{.OS}}_{{.Arch}}"
+build:
+	@ go build
+
+dist:
+	@ gox -output "dist/$(BIN)_{{.OS}}_{{.Arch}}" --osarch "linux/amd64 darwin/amd64 windows/amd64"
 
 test:
 	@ richgo test -v -cover ./...
@@ -14,3 +17,5 @@ coverage:
 validate-ci-config:
 	@ circleci config validate -c .circleci/config.yml
 
+local-ci:
+	@ circleci local execute --job $(JOB)
