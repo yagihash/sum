@@ -38,7 +38,6 @@ jobs:
 
       - run: go get github.com/tcnksm/ghr
       - run: go get github.com/mitchellh/gox
-      - run: mkdir dist
       - run: make dist
       - run: ghr $(cat version.txt) ./dist && echo Done || echo No release
 workflows:
