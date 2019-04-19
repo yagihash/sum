@@ -62,7 +62,7 @@ func main() {
 		}
 	}
 
-	_, err = scheduler.Every(10).Seconds().Run(job)
+	_, err = scheduler.Every(5).Minutes().Run(job)
 	if err != nil {
 		log.Fatal(err)
 	}
