@@ -8,6 +8,7 @@ dist:
 	@ gox -output "dist/$(BIN)_{{.OS}}_{{.Arch}}" --osarch "linux/amd64 darwin/amd64 windows/amd64"
 
 test:
+	@ go vet ./...
 	@ richgo test -v -cover ./...
 
 coverage:
