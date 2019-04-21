@@ -51,13 +51,13 @@ func main() {
 		}
 
 		if isUpdated {
-			if err := s.NotifyUpdate(c.URL, c.Md5sum); err != nil {
+			if err := s.NotifyUpdate(*c); err != nil {
 				log.Fatal(err)
 			}
 		}
 	}
 
-	if err := s.NotifyStart(c.URL, c.Md5sum); err != nil {
+	if err := s.NotifyStart(*c); err != nil {
 		log.Fatal(err)
 	}
 
