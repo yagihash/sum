@@ -6,6 +6,7 @@ import (
 	"runtime"
 
 	"github.com/yagihashoo/sum/client"
+	"github.com/yagihashoo/sum/slack"
 
 	"github.com/carlescere/scheduler"
 )
@@ -36,7 +37,7 @@ func main() {
 		url = "http://www.baseballbear.com/live/"
 	}
 
-	slack := newSlack(username, iconEmoji, channelID, token)
+	s := slack.NewSlack(username, iconEmoji, channelID, token)
 
 	c, err := client.NewClient(url)
 	if err != nil {
@@ -50,15 +51,17 @@ func main() {
 		}
 
 		if isUpdated {
-			err := slack.Notify(c.URL, c.Md5sum)
-			if err != nil {
+			if err := s.NotifyUpdate(c.URL, c.Md5sum); err != nil {
 				log.Fatal(err)
 			}
 		}
 	}
 
-	_, err = scheduler.Every(5).Minutes().Run(job)
-	if err != nil {
+	if err := s.NotifyStart(c.URL, c.Md5sum); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := scheduler.Every(5).Minutes().Run(job); err != nil {
 		log.Fatal(err)
 	}
 
