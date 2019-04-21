@@ -48,4 +48,25 @@ workflows:
       - test:
           requires:
             - build
+  release:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
+      - release:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - test
 
