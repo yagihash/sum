@@ -1,13 +1,11 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"runtime"
+
+	"github.com/yagihashoo/sum/client"
 
 	"github.com/carlescere/scheduler"
 )
@@ -40,53 +38,29 @@ func main() {
 
 	slack := newSlack(username, iconEmoji, channelID, token)
 
-	body, err := fetch(url)
+	c, err := client.NewClient(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	hash := md5sum(body)
 
 	job := func() {
-		body, err := fetch(url)
+		_, isUpdated, err := c.Fetch()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		current := md5sum(body)
-		if current != hash {
-			hash = current
-			err := slack.Notify(url, hash)
+		if isUpdated {
+			err := slack.Notify(c.URL, c.Md5sum)
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
 	}
 
-	_, err = scheduler.Every(5).Minutes().Run(job)
+	_, err = scheduler.Every(5).Seconds().Run(job)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	runtime.Goexit()
-
-}
-
-func fetch(url string) (string, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	return string(body), err
-}
-
-func md5sum(s string) string {
-	sum := md5.Sum([]byte(s))
-	return hex.EncodeToString(sum[:])
 }
