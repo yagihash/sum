@@ -5,8 +5,8 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/yagihash/sum/client"
-	"github.com/yagihash/sum/slack"
+	"github.com/yagihashoo/sum/client"
+	"github.com/yagihashoo/sum/slack"
 
 	"github.com/carlescere/scheduler"
 )
